@@ -24,17 +24,25 @@ class GradesController < ApplicationController
   end
 
   def create
-    grade = current_school.grades.build(grade_create_params)
-    
+    # Validate student exists and belongs to current school
+    student = current_school.students.find_by(id: grade_create_params[:student_id])
+    unless student
+      return render json: { error: 'Student not found or does not belong to your school' }, status: :not_found
+    end
+
+    # Validate subject exists and belongs to current school
+    subject = current_school.subjects.find_by(id: grade_create_params[:subject_id])
+    unless subject
+      return render json: { error: 'Subject not found or does not belong to your school' }, status: :not_found
+    end
+
     # Validate that subject belongs to current user if teacher
-    if current_user.teacher? && grade.subject.teacher_id != current_user.id
+    if current_user.teacher? && subject.teacher_id != current_user.id
       return render json: { error: 'You can only create grades for your subjects' }, status: :forbidden
     end
 
-    # Validate student and subject belong to current school
-    unless grade.student.school_id == current_school.id && grade.subject.school_id == current_school.id
-      return render json: { error: 'Student and subject must belong to your school' }, status: :unprocessable_entity
-    end
+    # Build grade with validated relationships
+    grade = current_school.grades.build(grade_create_params)
 
     if grade.save
       render json: grade_json(grade), status: :created
