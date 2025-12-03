@@ -1,0 +1,1124 @@
+{
+  "info": {
+    "name": "API Notas Online",
+    "description": "API REST para gerenciamento escolar multilocatário com Ruby on Rails e MongoDB",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "0"
+  },
+  "item": [
+    {
+      "name": "1. Setup - Criar Escola e Usuários",
+      "item": [
+        {
+          "name": "Criar Escola",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"school_id\", jsonData.id);",
+                  "    pm.collectionVariables.set(\"school_id\", jsonData.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"school\": {\n    \"name\": \"Colégio Educação Plus\",\n    \"email\": \"contato@educacaoplus.com\",\n    \"address\": \"Av. Principal, 1000\",\n    \"phone\": \"(11) 3333-4444\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/schools",
+              "host": ["{{base_url}}"],
+              "path": ["schools"]
+            },
+            "description": "Cria uma nova escola. Este endpoint é público e não requer autenticação."
+          },
+          "response": []
+        },
+        {
+          "name": "Criar Usuário Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"admin_token\", jsonData.token);",
+                  "    pm.environment.set(\"admin_id\", jsonData.user.id);",
+                  "    pm.collectionVariables.set(\"token\", jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user\": {\n    \"name\": \"Carlos Admin\",\n    \"email\": \"carlos@educacaoplus.com\",\n    \"password\": \"senha123\",\n    \"password_confirmation\": \"senha123\",\n    \"user_type\": \"admin\",\n    \"school_id\": \"{{school_id}}\",\n    \"address\": \"Rua das Flores, 456\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": ["{{base_url}}"],
+              "path": ["users"]
+            },
+            "description": "Cria um usuário administrador. Salva automaticamente o token JWT."
+          },
+          "response": []
+        },
+        {
+          "name": "Criar Usuário Professor",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"teacher_token\", jsonData.token);",
+                  "    pm.environment.set(\"teacher_id\", jsonData.user.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user\": {\n    \"name\": \"Ana Professora\",\n    \"email\": \"ana@educacaoplus.com\",\n    \"password\": \"senha123\",\n    \"password_confirmation\": \"senha123\",\n    \"user_type\": \"teacher\",\n    \"school_id\": \"{{school_id}}\",\n    \"address\": \"Rua dos Professores, 789\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": ["{{base_url}}"],
+              "path": ["users"]
+            },
+            "description": "Cria um usuário professor. Salva automaticamente o token JWT."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Autenticação",
+      "item": [
+        {
+          "name": "Login Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"token\", jsonData.token);",
+                  "    pm.environment.set(\"admin_token\", jsonData.token);",
+                  "    pm.environment.set(\"current_user_id\", jsonData.user.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"carlos@educacaoplus.com\",\n  \"password\": \"senha123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/login",
+              "host": ["{{base_url}}"],
+              "path": ["users", "login"]
+            },
+            "description": "Faz login com usuário admin. Token JWT válido por 48 horas."
+          },
+          "response": []
+        },
+        {
+          "name": "Login Professor",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"token\", jsonData.token);",
+                  "    pm.environment.set(\"teacher_token\", jsonData.token);",
+                  "    pm.environment.set(\"current_user_id\", jsonData.user.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"ana@educacaoplus.com\",\n  \"password\": \"senha123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/login",
+              "host": ["{{base_url}}"],
+              "path": ["users", "login"]
+            },
+            "description": "Faz login com usuário professor."
+          },
+          "response": []
+        },
+        {
+          "name": "Ver Perfil Atual",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/me",
+              "host": ["{{base_url}}"],
+              "path": ["users", "me"]
+            },
+            "description": "Retorna informações do usuário autenticado."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Schools (Escolas)",
+      "item": [
+        {
+          "name": "Listar Escolas",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/schools",
+              "host": ["{{base_url}}"],
+              "path": ["schools"]
+            },
+            "description": "Lista escolas. Admin vê todas, outros usuários veem apenas a sua."
+          },
+          "response": []
+        },
+        {
+          "name": "Ver Escola Específica",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/schools/{{school_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["schools", "{{school_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar Escola (Admin)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"school\": {\n    \"name\": \"Colégio Educação Plus - Atualizado\",\n    \"phone\": \"(11) 4444-5555\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/schools/{{school_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["schools", "{{school_id}}"]
+            },
+            "description": "Apenas administradores podem atualizar escolas."
+          },
+          "response": []
+        },
+        {
+          "name": "Deletar Escola (Admin)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/schools/{{school_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["schools", "{{school_id}}"]
+            },
+            "description": "Apenas administradores podem deletar escolas."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Users (Usuários)",
+      "item": [
+        {
+          "name": "Listar Usuários (Admin)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": ["{{base_url}}"],
+              "path": ["users"]
+            },
+            "description": "Apenas admins podem listar todos os usuários."
+          },
+          "response": []
+        },
+        {
+          "name": "Ver Usuário Específico",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/{{current_user_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["users", "{{current_user_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar Usuário",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user\": {\n    \"name\": \"Carlos Admin Atualizado\",\n    \"address\": \"Nova Rua, 999\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/{{current_user_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["users", "{{current_user_id}}"]
+            },
+            "description": "Usuários podem atualizar seus próprios dados. Admin pode atualizar qualquer usuário."
+          },
+          "response": []
+        },
+        {
+          "name": "Deletar Usuário (Admin)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/{{user_id_to_delete}}",
+              "host": ["{{base_url}}"],
+              "path": ["users", "{{user_id_to_delete}}"]
+            },
+            "description": "Apenas admins podem deletar usuários."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. Students (Alunos)",
+      "item": [
+        {
+          "name": "Criar Aluno",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"student_id\", jsonData.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"student\": {\n    \"name\": \"Pedro Aluno\",\n    \"email\": \"pedro@example.com\",\n    \"registration_number\": \"2024001\",\n    \"phone\": \"(11) 98765-4321\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/students",
+              "host": ["{{base_url}}"],
+              "path": ["students"]
+            },
+            "description": "Cria um novo aluno vinculado à escola do usuário autenticado."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Alunos",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/students",
+              "host": ["{{base_url}}"],
+              "path": ["students"]
+            },
+            "description": "Lista todos os alunos da escola."
+          },
+          "response": []
+        },
+        {
+          "name": "Ver Aluno Específico",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/students/{{student_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["students", "{{student_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar Aluno",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"student\": {\n    \"name\": \"Pedro Aluno Silva\",\n    \"phone\": \"(11) 99999-9999\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/students/{{student_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["students", "{{student_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Deletar Aluno (Admin)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/students/{{student_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["students", "{{student_id}}"]
+            },
+            "description": "Apenas admins podem deletar alunos."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "6. Subjects (Disciplinas)",
+      "item": [
+        {
+          "name": "Criar Disciplina",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"subject_id\", jsonData.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subject\": {\n    \"name\": \"Matemática\",\n    \"code\": \"MAT101\",\n    \"number_of_grades\": 3,\n    \"passing_average\": 7.0,\n    \"recovery_average\": 5.0,\n    \"teacher_id\": \"{{teacher_id}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/subjects",
+              "host": ["{{base_url}}"],
+              "path": ["subjects"]
+            },
+            "description": "Cria uma nova disciplina. Se professor criar, é automaticamente associado."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Disciplinas",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/subjects",
+              "host": ["{{base_url}}"],
+              "path": ["subjects"]
+            },
+            "description": "Admin vê todas as disciplinas. Professor vê apenas as suas."
+          },
+          "response": []
+        },
+        {
+          "name": "Ver Disciplina Específica",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/subjects/{{subject_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["subjects", "{{subject_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar Disciplina",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subject\": {\n    \"name\": \"Matemática Avançada\",\n    \"passing_average\": 7.5\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/subjects/{{subject_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["subjects", "{{subject_id}}"]
+            },
+            "description": "Professor pode atualizar suas disciplinas. Admin pode atualizar qualquer uma."
+          },
+          "response": []
+        },
+        {
+          "name": "Deletar Disciplina",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/subjects/{{subject_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["subjects", "{{subject_id}}"]
+            },
+            "description": "Professor pode deletar suas disciplinas. Admin pode deletar qualquer uma."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "7. Grades (Notas)",
+      "item": [
+        {
+          "name": "Criar Registro de Notas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"grade_id\", jsonData.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grade\": {\n    \"student_id\": \"{{student_id}}\",\n    \"subject_id\": \"{{subject_id}}\",\n    \"scores\": [8.5, 7.0]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/grades",
+              "host": ["{{base_url}}"],
+              "path": ["grades"]
+            },
+            "description": "Cria um registro de notas. Professor só pode criar nas suas disciplinas."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Notas",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/grades",
+              "host": ["{{base_url}}"],
+              "path": ["grades"]
+            },
+            "description": "Admin vê todas as notas. Professor vê apenas das suas disciplinas."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Notas por Aluno",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/grades?student_id={{student_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["grades"],
+              "query": [
+                {
+                  "key": "student_id",
+                  "value": "{{student_id}}"
+                }
+              ]
+            },
+            "description": "Filtra notas por aluno específico."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Notas por Disciplina",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/grades?subject_id={{subject_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["grades"],
+              "query": [
+                {
+                  "key": "subject_id",
+                  "value": "{{subject_id}}"
+                }
+              ]
+            },
+            "description": "Filtra notas por disciplina específica."
+          },
+          "response": []
+        },
+        {
+          "name": "Ver Nota Específica",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/grades/{{grade_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["grades", "{{grade_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Adicionar Nova Nota ao Registro",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grade\": {\n    \"add_score\": 9.0\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/grades/{{grade_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["grades", "{{grade_id}}"]
+            },
+            "description": "Adiciona uma nova nota ao registro existente."
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar Nota Específica",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grade\": {\n    \"score_index\": 0,\n    \"update_score\": 8.0\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/grades/{{grade_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["grades", "{{grade_id}}"]
+            },
+            "description": "Atualiza uma nota específica pelo índice (0 = primeira nota)."
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar Todas as Notas",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grade\": {\n    \"scores\": [8.0, 7.5, 9.0]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/grades/{{grade_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["grades", "{{grade_id}}"]
+            },
+            "description": "Substitui todas as notas do registro."
+          },
+          "response": []
+        },
+        {
+          "name": "Deletar Registro de Notas",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/grades/{{grade_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["grades", "{{grade_id}}"]
+            },
+            "description": "Professor pode deletar notas das suas disciplinas. Admin pode deletar qualquer nota."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "8. Testes e Utilidades",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/up",
+              "host": ["{{base_url}}"],
+              "path": ["up"]
+            },
+            "description": "Verifica se a API está rodando."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "school_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "teacher_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "admin_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "teacher_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "current_user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "student_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "subject_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "grade_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

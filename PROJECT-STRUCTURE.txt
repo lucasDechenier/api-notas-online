@@ -1,0 +1,172 @@
+```
+📦 api-notas-online/
+│
+├── 🐳 Docker & Infrastructure
+│   ├── Dockerfile                      # Container da API Rails
+│   ├── docker-compose.yml              # Orquestração API + MongoDB
+│   ├── .dockerignore                   # Otimização de build
+│   └── .env.example                    # Template de variáveis
+│
+├── 📱 Application (app/)
+│   │
+│   ├── 🎮 Controllers
+│   │   ├── application_controller.rb   # Base controller
+│   │   ├── schools_controller.rb       # CRUD Escolas
+│   │   ├── users_controller.rb         # CRUD Usuários + Login
+│   │   ├── students_controller.rb      # CRUD Alunos
+│   │   ├── subjects_controller.rb      # CRUD Disciplinas
+│   │   ├── grades_controller.rb        # CRUD Notas
+│   │   └── concerns/
+│   │       ├── authenticable.rb        # Autenticação JWT
+│   │       └── json_web_token.rb       # JWT helpers
+│   │
+│   └── 🗄️ Models
+│       ├── school.rb                   # Entidade principal
+│       ├── user.rb                     # Admin/Teacher
+│       ├── student.rb                  # Alunos
+│       ├── subject.rb                  # Disciplinas
+│       └── grade.rb                    # Notas
+│
+├── ⚙️ Configuration (config/)
+│   ├── mongoid.yml                     # MongoDB config
+│   ├── routes.rb                       # API routes
+│   ├── application.rb                  # Rails config
+│   └── initializers/
+│       ├── cors.rb                     # CORS setup
+│       └── mongoid.rb                  # Mongoid init
+│
+├── 📚 Documentation
+│   ├── README.md                       # 📖 Guia principal
+│   ├── ARCHITECTURE.md                 # 🏗️ Arquitetura técnica
+│   ├── PROJECT-SUMMARY.md              # 📊 Resumo completo
+│   ├── COMMANDS.md                     # 💻 Comandos úteis
+│   ├── CHECKLIST.md                    # ✅ Verificação
+│   ├── requests.http                   # 🧪 Exemplos HTTP
+│   ├── api-examples.json               # 📝 Exemplos JSON
+│   └── PROJECT-STRUCTURE.txt           # 📂 Este arquivo
+│
+├── 🔧 Scripts
+│   └── setup.sh                        # Script de inicialização
+│
+└── 📦 Dependencies
+    ├── Gemfile                         # Ruby gems
+    └── Gemfile.lock                    # Versões locked
+
+═══════════════════════════════════════════════════════════
+
+🎯 ENTIDADES PRINCIPAIS
+
+School (Escola) - Entidade raiz multilocatário
+    ↓
+    ├── Users (Usuários)
+    │   ├── Admin (gerencia tudo)
+    │   └── Teacher (gerencia suas disciplinas)
+    │
+    ├── Students (Alunos)
+    │   └── registration_number único por escola
+    │
+    ├── Subjects (Disciplinas)
+    │   ├── code único por escola
+    │   ├── belongs_to :teacher
+    │   └── number_of_grades (1-3)
+    │
+    └── Grades (Notas)
+        ├── belongs_to :student
+        ├── belongs_to :subject
+        ├── scores[] (array de notas)
+        ├── average (calculado)
+        └── status (approved/recovery/failed)
+
+═══════════════════════════════════════════════════════════
+
+🔐 FLUXO DE AUTENTICAÇÃO
+
+1. POST /users/login
+   └─> Valida email/senha
+       └─> Gera JWT (exp: 48h)
+           └─> Retorna token
+
+2. Requisição autenticada
+   └─> Authorization: Bearer {token}
+       └─> Middleware valida token
+           └─> Extrai current_user
+               └─> Filtra por current_school
+                   └─> Autoriza por user_type
+
+═══════════════════════════════════════════════════════════
+
+🛣️ PRINCIPAIS ENDPOINTS
+
+Públicos (sem autenticação):
+├── POST /schools                       # Criar escola
+├── POST /users                         # Criar usuário
+└── POST /users/login                   # Login
+
+Autenticados:
+├── GET  /users/me                      # Perfil atual
+├── GET  /schools                       # Listar escolas
+├── CRUD /students                      # Gerenciar alunos
+├── CRUD /subjects                      # Gerenciar disciplinas
+└── CRUD /grades                        # Gerenciar notas
+
+═══════════════════════════════════════════════════════════
+
+🐳 CONTAINERS DOCKER
+
+┌─────────────────────────────────────────────────────────┐
+│  Container: api-notas-rails                             │
+│  ├─ Image: Ruby 3.1.4                                   │
+│  ├─ Framework: Rails 7.2.3 (API mode)                   │
+│  ├─ Port: 3000                                          │
+│  └─ Volume: código montado                              │
+└─────────────────────────────────────────────────────────┘
+                         ↓
+                    [Network]
+                         ↓
+┌─────────────────────────────────────────────────────────┐
+│  Container: api-notas-mongodb                           │
+│  ├─ Image: MongoDB 7                                    │
+│  ├─ Port: 27017                                         │
+│  ├─ User: admin / admin123                              │
+│  └─ Volume: mongodb_data (persistente)                  │
+└─────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════
+
+📊 ESTATÍSTICAS DO PROJETO
+
+Modelos:          5 arquivos
+Controllers:      6 arquivos (5 + base)
+Concerns:         2 arquivos
+Rotas:            ~20 endpoints
+Documentação:     8 arquivos
+Total Linhas:     ~1800 linhas de código
+
+Gems principais:
+├── mongoid       # MongoDB ODM
+├── jwt           # Autenticação
+├── bcrypt        # Senhas
+└── rack-cors     # CORS
+
+═══════════════════════════════════════════════════════════
+
+🚀 QUICK START
+
+1. Iniciar:
+   $ docker-compose up --build
+
+2. Testar:
+   $ curl http://localhost:3000/up
+
+3. Usar:
+   Ver README.md para exemplos completos
+
+═══════════════════════════════════════════════════════════
+
+✅ STATUS: 100% COMPLETO E FUNCIONAL
+
+Todos os requisitos implementados com sucesso!
+API pronta para uso em ambiente de desenvolvimento.
+
+═══════════════════════════════════════════════════════════
+```

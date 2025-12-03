@@ -1,0 +1,280 @@
+### Variáveis
+@baseUrl = http://localhost:3000
+@token = SEU_TOKEN_AQUI
+@schoolId = SEU_SCHOOL_ID_AQUI
+@userId = SEU_USER_ID_AQUI
+@studentId = SEU_STUDENT_ID_AQUI
+@subjectId = SEU_SUBJECT_ID_AQUI
+@teacherId = SEU_TEACHER_ID_AQUI
+
+### Health Check
+GET {{baseUrl}}/up
+
+### ============================================
+### SCHOOLS (Escolas)
+### ============================================
+
+### Criar escola (público)
+POST {{baseUrl}}/schools
+Content-Type: application/json
+
+{
+  "school": {
+    "name": "Escola Exemplo",
+    "email": "contato@escolaexemplo.com",
+    "address": "Rua Exemplo, 123",
+    "phone": "(11) 99999-9999"
+  }
+}
+
+### Listar escolas (autenticado)
+GET {{baseUrl}}/schools
+Authorization: Bearer {{token}}
+
+### Ver escola específica
+GET {{baseUrl}}/schools/{{schoolId}}
+Authorization: Bearer {{token}}
+
+### Atualizar escola (admin)
+PUT {{baseUrl}}/schools/{{schoolId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "school": {
+    "name": "Escola Exemplo Atualizada",
+    "phone": "(11) 88888-8888"
+  }
+}
+
+### Deletar escola (admin)
+DELETE {{baseUrl}}/schools/{{schoolId}}
+Authorization: Bearer {{token}}
+
+### ============================================
+### USERS (Usuários)
+### ============================================
+
+### Criar usuário admin (público)
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "user": {
+    "name": "Admin Silva",
+    "email": "admin@escola.com",
+    "password": "senha123",
+    "password_confirmation": "senha123",
+    "user_type": "admin",
+    "school_id": "{{schoolId}}"
+  }
+}
+
+### Criar usuário professor (público)
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "user": {
+    "name": "Professor João",
+    "email": "professor@escola.com",
+    "password": "senha123",
+    "password_confirmation": "senha123",
+    "user_type": "teacher",
+    "school_id": "{{schoolId}}"
+  }
+}
+
+### Login (público)
+POST {{baseUrl}}/users/login
+Content-Type: application/json
+
+{
+  "email": "admin@escola.com",
+  "password": "senha123"
+}
+
+### Ver perfil atual
+GET {{baseUrl}}/users/me
+Authorization: Bearer {{token}}
+
+### Listar usuários (admin)
+GET {{baseUrl}}/users
+Authorization: Bearer {{token}}
+
+### Ver usuário específico
+GET {{baseUrl}}/users/{{userId}}
+Authorization: Bearer {{token}}
+
+### Atualizar usuário
+PUT {{baseUrl}}/users/{{userId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "user": {
+    "name": "Admin Silva Atualizado",
+    "address": "Nova Rua, 456"
+  }
+}
+
+### Deletar usuário (admin)
+DELETE {{baseUrl}}/users/{{userId}}
+Authorization: Bearer {{token}}
+
+### ============================================
+### STUDENTS (Alunos)
+### ============================================
+
+### Criar aluno
+POST {{baseUrl}}/students
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "student": {
+    "name": "Maria Santos",
+    "email": "maria@example.com",
+    "registration_number": "2024001",
+    "phone": "(11) 88888-8888"
+  }
+}
+
+### Listar alunos
+GET {{baseUrl}}/students
+Authorization: Bearer {{token}}
+
+### Ver aluno específico
+GET {{baseUrl}}/students/{{studentId}}
+Authorization: Bearer {{token}}
+
+### Atualizar aluno
+PUT {{baseUrl}}/students/{{studentId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "student": {
+    "name": "Maria Santos Silva",
+    "phone": "(11) 77777-7777"
+  }
+}
+
+### Deletar aluno (admin)
+DELETE {{baseUrl}}/students/{{studentId}}
+Authorization: Bearer {{token}}
+
+### ============================================
+### SUBJECTS (Disciplinas)
+### ============================================
+
+### Criar disciplina
+POST {{baseUrl}}/subjects
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "subject": {
+    "name": "Matemática",
+    "code": "MAT101",
+    "number_of_grades": 3,
+    "passing_average": 7.0,
+    "recovery_average": 5.0,
+    "teacher_id": "{{teacherId}}"
+  }
+}
+
+### Listar disciplinas
+GET {{baseUrl}}/subjects
+Authorization: Bearer {{token}}
+
+### Ver disciplina específica
+GET {{baseUrl}}/subjects/{{subjectId}}
+Authorization: Bearer {{token}}
+
+### Atualizar disciplina
+PUT {{baseUrl}}/subjects/{{subjectId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "subject": {
+    "name": "Matemática Avançada",
+    "passing_average": 7.5
+  }
+}
+
+### Deletar disciplina
+DELETE {{baseUrl}}/subjects/{{subjectId}}
+Authorization: Bearer {{token}}
+
+### ============================================
+### GRADES (Notas)
+### ============================================
+
+### Criar registro de notas
+POST {{baseUrl}}/grades
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "grade": {
+    "student_id": "{{studentId}}",
+    "subject_id": "{{subjectId}}",
+    "scores": [8.5, 7.0]
+  }
+}
+
+### Listar notas
+GET {{baseUrl}}/grades
+Authorization: Bearer {{token}}
+
+### Listar notas por aluno
+GET {{baseUrl}}/grades?student_id={{studentId}}
+Authorization: Bearer {{token}}
+
+### Listar notas por disciplina
+GET {{baseUrl}}/grades?subject_id={{subjectId}}
+Authorization: Bearer {{token}}
+
+### Ver nota específica
+GET {{baseUrl}}/grades/{{gradeId}}
+Authorization: Bearer {{token}}
+
+### Adicionar uma nota
+PUT {{baseUrl}}/grades/{{gradeId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "grade": {
+    "add_score": 9.0
+  }
+}
+
+### Atualizar uma nota específica (índice 0 = primeira nota)
+PUT {{baseUrl}}/grades/{{gradeId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "grade": {
+    "score_index": 0,
+    "update_score": 8.0
+  }
+}
+
+### Atualizar todas as notas
+PUT {{baseUrl}}/grades/{{gradeId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "grade": {
+    "scores": [8.0, 7.5, 9.0]
+  }
+}
+
+### Deletar registro de notas
+DELETE {{baseUrl}}/grades/{{gradeId}}
+Authorization: Bearer {{token}}
