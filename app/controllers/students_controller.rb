@@ -43,7 +43,7 @@ class StudentsController < ApplicationController
 
   def check_delete_permission
     unless current_user.admin?
-      render json: { error: 'Only admins can delete students' }, status: :forbidden
+      render json: { error: 'Apenas administradores podem excluir alunos' }, status: :forbidden
     end
   end
 

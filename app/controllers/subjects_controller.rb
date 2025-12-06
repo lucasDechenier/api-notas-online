@@ -15,7 +15,7 @@ class SubjectsController < ApplicationController
 
   def show
     unless current_user.admin? || @subject.teacher_id == current_user.id
-      return render json: { error: 'Access denied' }, status: :forbidden
+      return render json: { error: 'Acesso negado' }, status: :forbidden
     end
 
     render json: subject_json(@subject), status: :ok
@@ -57,7 +57,7 @@ class SubjectsController < ApplicationController
 
   def check_subject_permission
     unless current_user.admin? || @subject.teacher_id == current_user.id
-      render json: { error: 'You can only manage your own subjects' }, status: :forbidden
+      render json: { error: 'Você só pode gerenciar suas próprias disciplinas' }, status: :forbidden
     end
   end
 

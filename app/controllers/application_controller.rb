@@ -7,7 +7,7 @@ class ApplicationController < ActionController::API
   private
 
   def not_found
-    render json: { error: 'Record not found' }, status: :not_found
+    render json: { error: 'Registro não encontrado' }, status: :not_found
   end
 
   def unprocessable_entity(exception)

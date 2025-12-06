@@ -27,18 +27,18 @@ class GradesController < ApplicationController
     # Validate student exists and belongs to current school
     student = current_school.students.find_by(id: grade_create_params[:student_id])
     unless student
-      return render json: { error: 'Student not found or does not belong to your school' }, status: :not_found
+      return render json: { error: 'Aluno não encontrado ou não pertence à sua escola' }, status: :not_found
     end
 
     # Validate subject exists and belongs to current school
     subject = current_school.subjects.find_by(id: grade_create_params[:subject_id])
     unless subject
-      return render json: { error: 'Subject not found or does not belong to your school' }, status: :not_found
+      return render json: { error: 'Disciplina não encontrada ou não pertence à sua escola' }, status: :not_found
     end
 
     # Validate that subject belongs to current user if teacher
     if current_user.teacher? && subject.teacher_id != current_user.id
-      return render json: { error: 'You can only create grades for your subjects' }, status: :forbidden
+      return render json: { error: 'Você só pode criar notas para suas disciplinas' }, status: :forbidden
     end
 
     # Build grade with validated relationships
@@ -78,7 +78,7 @@ class GradesController < ApplicationController
         render json: { errors: @grade.errors.full_messages }, status: :unprocessable_entity
       end
     else
-      render json: { error: 'No valid update parameters provided' }, status: :unprocessable_entity
+      render json: { error: 'Nenhum parâmetro de atualização válido fornecido' }, status: :unprocessable_entity
     end
   end
 
@@ -96,7 +96,7 @@ class GradesController < ApplicationController
   def check_grade_permission
     # Teachers can only manage grades from their subjects
     if current_user.teacher? && @grade.subject.teacher_id != current_user.id
-      render json: { error: 'You can only manage grades for your subjects' }, status: :forbidden
+      render json: { error: 'Você só pode gerenciar notas das suas disciplinas' }, status: :forbidden
     end
   end
 

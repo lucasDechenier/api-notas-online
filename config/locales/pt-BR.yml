@@ -1,0 +1,82 @@
+pt-BR:
+  errors:
+    messages:
+      blank: "não pode ficar em branco"
+      empty: "não pode ficar vazio"
+      required: "é obrigatório"
+      invalid: "é inválido"
+      taken: "já está em uso"
+      too_short: "é muito curto (mínimo: %{count} caracteres)"
+      too_long: "é muito longo (máximo: %{count} caracteres)"
+      wrong_length: "não possui o tamanho esperado (%{count} caracteres)"
+      not_a_number: "não é um número"
+      not_an_integer: "não é um número inteiro"
+      greater_than: "deve ser maior que %{count}"
+      greater_than_or_equal_to: "deve ser maior ou igual a %{count}"
+      equal_to: "deve ser igual a %{count}"
+      less_than: "deve ser menor que %{count}"
+      less_than_or_equal_to: "deve ser menor ou igual a %{count}"
+      other_than: "deve ser diferente de %{count}"
+      odd: "deve ser ímpar"
+      even: "deve ser par"
+      inclusion: "não está incluído na lista"
+      exclusion: "não está disponível"
+      confirmation: "não é igual a %{attribute}"
+      accepted: "deve ser aceito"
+      present: "deve ficar em branco"
+      record_invalid: "A validação falhou: %{errors}"
+      
+  mongoid:
+    errors:
+      messages:
+        ambiguous_relationship: "Relacionamento ambíguo"
+        document_not_found: "Documento com id %{klass} %{identifiers} não encontrado"
+        invalid_database: "Base de dados deve ser um objeto Mongo::Database, não %{name}"
+        invalid_type: "Tentativa de definir um valor de tipo '%{klass}' no campo '%{name}' que é do tipo '%{type}'"
+        too_many_nested_attribute_records: "Muitos registros aninhados. Máximo de %{limit} são permitidos"
+        validations: "Validação falhou - %{errors}"
+        unsaved_document: "Você não pode chamar %{method} em um documento que não foi salvo: %{document}"
+        blank_in_locale: "não pode ficar em branco na localidade %{location}"
+        duplicate_key: "Tentativa de criar um registro duplicado"
+        
+    attributes:
+      school:
+        name: "Nome"
+        email: "E-mail"
+        address: "Endereço"
+        phone: "Telefone"
+        
+      user:
+        name: "Nome"
+        email: "E-mail"
+        password: "Senha"
+        password_confirmation: "Confirmação de senha"
+        password_digest: "Senha"
+        user_type: "Tipo de usuário"
+        address: "Endereço"
+        phone: "Telefone"
+        school_id: "Escola"
+        
+      student:
+        name: "Nome"
+        email: "E-mail"
+        registration_number: "Número de matrícula"
+        phone: "Telefone"
+        school_id: "Escola"
+        
+      subject:
+        name: "Nome"
+        code: "Código"
+        number_of_grades: "Quantidade de notas"
+        passing_average: "Média de aprovação"
+        recovery_average: "Média de recuperação"
+        teacher_id: "Professor"
+        school_id: "Escola"
+        
+      grade:
+        student_id: "Aluno"
+        subject_id: "Disciplina"
+        scores: "Notas"
+        average: "Média"
+        status: "Status"
+        school_id: "Escola"

@@ -30,7 +30,7 @@ class UsersController < ApplicationController
       token = user.generate_jwt
       render json: { user: user_json(user), token: token }, status: :ok
     else
-      render json: { error: 'Invalid email or password' }, status: :unauthorized
+      render json: { error: 'E-mail ou senha inválidos' }, status: :unauthorized
     end
   end
 
@@ -41,12 +41,12 @@ class UsersController < ApplicationController
   def update
     # Only admin can update other users, users can update themselves
     unless current_user.admin? || @user.id == current_user.id
-      return render json: { error: 'Access denied' }, status: :forbidden
+      return render json: { error: 'Acesso negado' }, status: :forbidden
     end
 
     # Teachers cannot change user_type
     if current_user.teacher? && user_params[:user_type].present?
-      return render json: { error: 'Teachers cannot change user type' }, status: :forbidden
+      return render json: { error: 'Professores não podem alterar o tipo de usuário' }, status: :forbidden
     end
 
     if @user.update(update_user_params)
